@@ -4,11 +4,11 @@ kind: Kustomization
 namespace: fans
 
 resources:
-  - ../../base
-  - sealed-secret.yaml
+- ../../base
+- sealed-secret.yaml
 
 # CI rewrites this to the digest it just pushed (.github/workflows/ci.yml).
 images:
-  - name: fans
-    newName: ghcr.io/shotayagami/fans
-    newTag: latest
+- digest: sha256:354c5466dffaa61a7333d289914757dab9b5623eb15aca22d40f7e7dffd20d23
+  name: fans
+  newName: ghcr.io/shotayagami/fans
