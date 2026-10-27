@@ -25,7 +25,8 @@ spec:
       containers:
         - name: migrate
           image: fans
-          command: [ "./bin/rails", "db:prepare" ]
+          # args, not command: command would skip bin/docker-entrypoint.
+          args: [ "./bin/rails", "db:prepare" ]
           envFrom:
             - configMapRef:
                 name: fans-config

@@ -24,7 +24,8 @@ spec:
       containers:
         - name: worker
           image: fans
-          command: [ "./bin/jobs" ]
+          # args, not command: command would skip bin/docker-entrypoint.
+          args: [ "./bin/jobs" ]
           envFrom:
             - configMapRef:
                 name: fans-config
