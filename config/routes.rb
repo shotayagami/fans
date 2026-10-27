@@ -13,6 +13,7 @@ Rails.application.routes.draw do
     root "plans#index"
     resources :plans, except: %i[show destroy]
     resources :posts, except: :show
+    resource :enrollment, only: %i[new create]
     resource :connect, only: %i[show create]
     resources :ledger_entries, only: :index
   end

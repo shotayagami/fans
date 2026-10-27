@@ -3,11 +3,11 @@ require "rails_helper"
 RSpec.describe "スタジオ" do
   let(:creator) { create(:creator) }
 
-  it "ファンは入れない" do
+  it "クリエイターでなければ、クリエイターになる案内へ送る" do
     sign_in create(:user)
     get studio_plans_path
 
-    expect(response).to redirect_to(root_path)
+    expect(response).to redirect_to(new_studio_enrollment_path)
   end
 
   it "プランを作れる" do

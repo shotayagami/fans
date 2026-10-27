@@ -19,10 +19,11 @@
       <%= link_to "Fans", root_path, class: "wordmark" %>
       <nav class="site-nav" aria-label="メイン">
         <% if user_signed_in? %>
+          <%= link_to "加入中のプラン", subscriptions_path %>
           <% if current_user.creator? %>
             <%= link_to "スタジオ", studio_root_path %>
           <% else %>
-            <%= link_to "加入中のプラン", subscriptions_path %>
+            <%= link_to "クリエイターになる", new_studio_enrollment_path %>
           <% end %>
           <% if current_user.admin? %>
             <%= link_to "管理", admin_subscriptions_path %>
