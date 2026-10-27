@@ -35,6 +35,12 @@ Stripe Connect を使った精算の仕組みを、Django で本番運用して�
 
 ![本文が隠れた投稿](docs/screenshots/03-post-locked.png)
 
+### 加入後の投稿
+
+加入すると、同じ投稿の本文と画像を読めます。
+
+![本文と画像が表示された投稿](docs/screenshots/04-post-unlocked.png)
+
 ### 加入中のプラン
 
 解約を受け付けると「解約予定」と表示し、期間の終わりまで閲覧できます。
