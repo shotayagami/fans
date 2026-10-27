@@ -4,6 +4,10 @@
 
 <% if current_user.charges_enabled? %>
   <p>登録済みです。支援の売上から手数料 <%= LedgerEntry::PLATFORM_FEE_PERCENT %>% を引いた額が、この口座に送金されます。</p>
+<% elsif params[:returned] %>
+  <p>Stripe での確認が終わるまで、少し時間がかかることがあります。数秒おいて<%= link_to "状態を再確認", studio_connect_path(returned: 1) %>してください。</p>
+  <p class="hint">登録の途中で戻ってきた場合は、次のボタンから続けてください。</p>
+  <%= button_to "登録を続ける", studio_connect_path, class: "button", data: { turbo: false } %>
 <% else %>
   <p>支援を受け付けるには、Stripe で受取口座を登録します。テストモードなので、Stripe の画面ではテスト用の値を入力してください。</p>
   <%= button_to(current_user.stripe_account_id ? "登録を続ける" : "Stripe で登録する",
