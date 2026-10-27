@@ -35,6 +35,11 @@ module Fans
     #
     config.time_zone = "Tokyo"
     config.i18n.default_locale = :ja
+
+    # The worker Pod does not mount the uploads volume, so AnalyzeJob would fail with
+    # FileNotFoundError. Images are shown as-is (no variants), so metadata is not needed.
+    # ponytail: re-enable once uploads move to S3-compatible storage shared by both Pods.
+    config.active_storage.analyzers = []
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

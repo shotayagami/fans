@@ -20,7 +20,7 @@
             <td><%= subscription_status_label(subscription) %></td>
             <td><%= subscription.current_period_end && l(subscription.current_period_end.to_date) %></td>
             <td>
-              <% if subscription.status.in?(Subscription::ACCESS_STATUSES) %>
+              <% if subscription.status.in?(Subscription::ACCESS_STATUSES) && !subscription.cancel_at_period_end? %>
                 <%= button_to "解約", subscription_path(subscription), method: :delete, class: "link-button",
                               form: { data: { turbo_confirm: "期間の終わりで解約します。よろしいですか?" } } %>
               <% end %>

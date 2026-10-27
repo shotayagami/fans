@@ -12,6 +12,13 @@ RSpec.describe Subscription do
       expect(fan.subscribed_to?(plan)).to be true
     end
 
+    it "期間の終わりでの解約予定を取り込み、期間内は読めるままにする" do
+      subscription = described_class.sync_from_stripe!(stripe_subscription(fan: fan, plan: plan, cancel_at_period_end: true))
+
+      expect(subscription).to be_canceling
+      expect(fan.subscribed_to?(plan)).to be true
+    end
+
     it "同じ Stripe の ID なら既存の行を更新する" do
       described_class.sync_from_stripe!(stripe_subscription(fan: fan, plan: plan))
 

@@ -1,9 +1,10 @@
 module StripeHelpers
-  def stripe_subscription(id: "sub_123", status: "active", period_end: 1.month.from_now, fan:, plan:)
+  def stripe_subscription(id: "sub_123", status: "active", period_end: 1.month.from_now, cancel_at_period_end: false, fan:, plan:)
     Stripe::Subscription.construct_from(
       id: id,
       object: "subscription",
       status: status,
+      cancel_at_period_end: cancel_at_period_end,
       metadata: { fan_id: fan.id.to_s, plan_id: plan.id.to_s },
       items: { object: "list", data: [ { id: "si_1", object: "subscription_item", current_period_end: period_end.to_i } ] }
     )

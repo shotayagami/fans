@@ -1,5 +1,10 @@
 # Demo data for screens. The seeded creator has no real Stripe account, so checkout
 # only works for creators who complete Connect onboarding in test mode.
+#
+# db:prepare runs this file whenever it creates a database, including the first
+# production deploy, and these accounts have well-known passwords. Development only.
+return unless Rails.env.development?
+
 creator = User.find_or_create_by!(email: "creator@example.com") do |u|
   u.password = "password123"
   u.display_name = "しおり工房"

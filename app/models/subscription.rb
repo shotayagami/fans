@@ -16,6 +16,7 @@ class Subscription < ApplicationRecord
       subscription.fan_id ||= stripe_subscription.metadata["fan_id"]
       subscription.plan_id ||= stripe_subscription.metadata["plan_id"]
       subscription.status = stripe_subscription.status
+      subscription.cancel_at_period_end = stripe_subscription.cancel_at_period_end ? true : false
       subscription.current_period_end = Time.zone.at(stripe_subscription.items.data.first.current_period_end)
       subscription.save!
     end
@@ -23,5 +24,11 @@ class Subscription < ApplicationRecord
 
   def cancel_at_period_end!
     Stripe::Subscription.update(stripe_subscription_id, cancel_at_period_end: true)
+    # Reflect it now; the customer.subscription.updated webhook then confirms the same state.
+    update!(cancel_at_period_end: true)
+  end
+
+  def canceling?
+    cancel_at_period_end? && status.in?(ACCESS_STATUSES)
   end
 end
