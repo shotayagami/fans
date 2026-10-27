@@ -1,4 +1,11 @@
 #!/bin/bash -e
 
+# Kubernetes emptyDir volumes are mode 0777 without the sticky bit, which Ruby's
+# Dir.tmpdir rejects. Use a private directory inside it instead.
+if [ -d /tmp ] && [ -w /tmp ]; then
+  mkdir -p -m 0700 /tmp/rails
+  export TMPDIR=/tmp/rails
+fi
+
 # Migrations run as a separate Job (k8s/base/migrate-job.yaml), not on server start.
 exec "${@}"
