@@ -15,17 +15,26 @@ class User < ApplicationRecord
     end
   end
 
+  # Connected accounts use Accounts v2: Stripe rejects v1 account creation for new Connect integrations.
   def connect_onboarding_url(refresh_url:, return_url:)
     update!(stripe_account_id: create_connect_account.id) unless stripe_account_id
-    Stripe::AccountLink.create(account: stripe_account_id, refresh_url: refresh_url,
-                               return_url: return_url, type: "account_onboarding").url
+    stripe_v2.account_links.create(
+      account: stripe_account_id,
+      use_case: {
+        type: "account_onboarding",
+        account_onboarding: { refresh_url: refresh_url, return_url: return_url }
+      }
+    ).url
   end
 
-  # ponytail: synced when the creator returns from onboarding; add a Connect webhook for account.updated if accounts change later.
+  # ponytail: synced when the creator returns from onboarding; add a Connect webhook for account updates if accounts change later.
+  # The flag means "can receive destination-charge transfers", the only capability this app uses.
   def refresh_connect_status!
     return unless stripe_account_id
 
-    update!(charges_enabled: Stripe::Account.retrieve(stripe_account_id).charges_enabled)
+    account = stripe_v2.accounts.retrieve(stripe_account_id, include: [ "configuration.recipient" ])
+    status = account.configuration&.recipient&.capabilities&.stripe_balance&.stripe_transfers&.status
+    update!(charges_enabled: status == "active")
   end
 
   def subscribed_to?(plan)
@@ -35,15 +44,20 @@ class User < ApplicationRecord
   private
 
   def create_connect_account
-    Stripe::Account.create(
-      country: "JP",
-      email: email,
-      controller: {
-        stripe_dashboard: { type: "express" },
-        fees: { payer: "application" },
-        losses: { payments: "application" }
+    stripe_v2.accounts.create(
+      contact_email: email,
+      display_name: display_name,
+      dashboard: "express",
+      identity: { country: "jp" },
+      defaults: {
+        currency: "jpy",
+        responsibilities: { fees_collector: "application", losses_collector: "application" }
       },
-      capabilities: { transfers: { requested: true } }
+      configuration: { recipient: { capabilities: { stripe_balance: { stripe_transfers: { requested: true } } } } }
     )
+  end
+
+  def stripe_v2
+    Stripe::StripeClient.new(Stripe.api_key).v2.core
   end
 end
