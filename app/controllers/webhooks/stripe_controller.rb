@@ -14,7 +14,10 @@ module Webhooks
         e.event_type = event.type
         e.payload = event.to_hash
       end
-      StripeEventJob.perform_later(record) if record.previously_new_record?
+      # Enqueue until the event is processed, not only when it is first stored: if the
+      # enqueue failed (500), Stripe's retry must be able to recover the stored event.
+      # StripeEvent#process! is idempotent, so an extra job is harmless.
+      StripeEventJob.perform_later(record) unless record.processed_at
       head :ok
     end
   end

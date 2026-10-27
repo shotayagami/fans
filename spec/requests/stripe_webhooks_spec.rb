@@ -17,13 +17,23 @@ RSpec.describe "Stripe webhook" do
     expect(response).to have_http_status(:ok)
   end
 
-  it "同じイベントが再送されても二度は処理しない" do
-    post "/webhooks/stripe", params: payload, headers: signed_stripe_headers(payload)
+  it "処理済みのイベントが再送されても、保存し直さず、ジョブにも回さない" do
+    StripeEvent.create!(stripe_event_id: "evt_123", event_type: "invoice.paid", payload: JSON.parse(payload), processed_at: 1.minute.ago)
 
     expect {
       post "/webhooks/stripe", params: payload, headers: signed_stripe_headers(payload)
     }.not_to have_enqueued_job(StripeEventJob)
     expect(response).to have_http_status(:ok)
+    expect(StripeEvent.count).to eq 1
+  end
+
+  it "保存されたまま未処理のイベントは、再送を受けたときに改めてジョブに回す" do
+    # Covers a first delivery whose job could not be enqueued after the event was stored.
+    StripeEvent.create!(stripe_event_id: "evt_123", event_type: "invoice.paid", payload: JSON.parse(payload))
+
+    expect {
+      post "/webhooks/stripe", params: payload, headers: signed_stripe_headers(payload)
+    }.to have_enqueued_job(StripeEventJob)
     expect(StripeEvent.count).to eq 1
   end
 
