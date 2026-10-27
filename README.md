@@ -19,7 +19,37 @@ Stripe Connect を使った精算の仕組みを、Django で本番運用して�
 
 ## 画面
 
-<!-- TODO: docs/screenshots/ に画像を置く -->
+公開している fans.yagamin.net の実際の画面です (Stripe のテストモードのデータ)。
+
+### クリエイター一覧
+
+![クリエイター一覧](docs/screenshots/01-creators.png)
+
+### クリエイターのページ
+
+![プランと投稿が並ぶクリエイターのページ](docs/screenshots/02-creator.png)
+
+### 未加入のときの投稿
+
+プランに加入していない人には本文を出さずに支援の案内を出します。
+
+![本文が隠れた投稿](docs/screenshots/03-post-locked.png)
+
+### 加入中のプラン
+
+解約を受け付けると「解約予定」と表示し、期間の終わりまで閲覧できます。
+
+![加入中のプランの一覧](docs/screenshots/05-subscriptions.png)
+
+### 売上
+
+支援額から手数料 10% を引いた受取額を支援ごとに記録します。
+
+![支援額・手数料・受取額の内訳](docs/screenshots/06-ledger.png)
+
+### 加入状況 (管理者)
+
+![管理者向けの加入状況の一覧](docs/screenshots/07-admin.png)
 
 ## 設計の判断
 
