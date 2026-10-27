@@ -1,0 +1,32 @@
+# Local development: docker compose run --rm app bin/setup
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  app:
+    image: ruby:3.4.12
+    working_dir: /app
+    user: "${UID:-1000}:${GID:-1000}"
+    command: bin/rails server -b 0.0.0.0
+    environment:
+      DATABASE_HOST: db
+      DATABASE_USER: postgres
+      DATABASE_PASSWORD: postgres
+      BUNDLE_PATH: vendor/bundle
+      HOME: /tmp
+    env_file:
+      - path: .env
+        required: false
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+volumes:
+  db:

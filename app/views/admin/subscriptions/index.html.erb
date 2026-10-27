@@ -1,0 +1,21 @@
+<% content_for :title, "加入状況 | 管理" %>
+
+<h1>加入状況</h1>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>開始</th><th>支援者</th><th>クリエイター</th><th>プラン</th><th>状態</th><th>次の更新日</th></tr></thead>
+    <tbody>
+      <% @subscriptions.each do |subscription| %>
+        <tr>
+          <td><%= l(subscription.created_at, format: :short) %></td>
+          <td><%= subscription.fan.display_name %></td>
+          <td><%= subscription.plan.creator.display_name %></td>
+          <td><%= subscription.plan.name %></td>
+          <td><%= subscription_status_label(subscription) %></td>
+          <td><%= subscription.current_period_end && l(subscription.current_period_end.to_date) %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

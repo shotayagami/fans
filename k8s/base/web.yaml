@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: fans-web
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  replicas: 1
+  # Recreate: the uploads PVC is ReadWriteOnce, so old and new Pods cannot overlap.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: fans-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fans-web
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: web
+          image: fans
+          ports:
+            - name: http
+              containerPort: 8080
+          envFrom:
+            - configMapRef:
+                name: fans-config
+            - secretRef:
+                name: fans-secret
+          env:
+            - name: FANS_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fans-pg-app
+                  key: password
+          readinessProbe:
+            httpGet:
+              path: /up
+              port: http
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /up
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ "ALL" ]
+          volumeMounts:
+            - name: tmp
+              mountPath: /rails/tmp
+            - name: systmp
+              mountPath: /tmp
+            - name: storage
+              mountPath: /rails/storage
+          resources:
+            requests:
+              cpu: 50m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: systmp
+          emptyDir: {}
+        - name: storage
+          persistentVolumeClaim:
+            claimName: fans-storage
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fans-web
+spec:
+  selector:
+    app.kubernetes.io/name: fans-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

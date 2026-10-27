@@ -1,0 +1,21 @@
+<%= form_with model: [ :studio, plan ], class: "form" do |f| %>
+  <%= render "shared/errors", record: plan %>
+
+  <div class="field">
+    <%= f.label :name %>
+    <%= f.text_field :name, required: true, maxlength: 50 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :price %>
+    <%= f.number_field :price, required: true, min: 100, max: 50_000, step: 1 %>
+    <p class="hint">変更すると、次の加入から新しい金額になります。加入済みの支援者の金額は変わりません。</p>
+  </div>
+
+  <div class="field">
+    <%= f.label :description %>
+    <%= f.text_area :description, rows: 4, maxlength: 1000 %>
+  </div>
+
+  <%= f.submit "保存する", class: "button" %>
+<% end %>

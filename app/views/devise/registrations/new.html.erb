@@ -1,0 +1,42 @@
+<% content_for :title, "登録 | Fans" %>
+
+<h1>登録</h1>
+
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "form" }) do |f| %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+
+  <fieldset class="field">
+    <legend>登録の種類</legend>
+    <% User.roles.each_key do |role| %>
+      <label class="choice">
+        <%= f.radio_button :role, role, checked: resource.role == role %>
+        <%= t("enums.user.role.#{role}") %>
+      </label>
+    <% end %>
+  </fieldset>
+
+  <div class="field">
+    <%= f.label :display_name %>
+    <%= f.text_field :display_name, required: true, maxlength: 50 %>
+  </div>
+
+  <div class="field">
+    <%= f.label :email %>
+    <%= f.email_field :email, autocomplete: "email", required: true %>
+  </div>
+
+  <div class="field">
+    <%= f.label :password %>
+    <%= f.password_field :password, autocomplete: "new-password", required: true %>
+    <p class="hint"><%= @minimum_password_length %> 文字以上</p>
+  </div>
+
+  <div class="field">
+    <%= f.label :password_confirmation %>
+    <%= f.password_field :password_confirmation, autocomplete: "new-password", required: true %>
+  </div>
+
+  <%= f.submit "登録する", class: "button" %>
+<% end %>
+
+<p><%= link_to "ログインはこちら", new_session_path(resource_name) %></p>

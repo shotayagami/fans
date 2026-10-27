@@ -1,0 +1,13 @@
+<% content_for :title, "クリエイター一覧 | Fans" %>
+
+<h1>クリエイター</h1>
+
+<% if @creators.any? %>
+  <ul class="creator-list">
+    <% @creators.each do |creator| %>
+      <li><%= link_to creator.display_name, creator_path(creator) %></li>
+    <% end %>
+  </ul>
+<% else %>
+  <p class="empty">支援を受け付けているクリエイターはまだいません。</p>
+<% end %>

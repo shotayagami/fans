@@ -1,0 +1,37 @@
+# One instance is enough: the demo holds Stripe test-mode data only, so it is not
+# in the Velero or per-DB backup rotation (see README).
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: fans-pg
+spec:
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  enableSuperuserAccess: false
+  bootstrap:
+    initdb:
+      database: fans_production
+      owner: fans
+  postgresql:
+    parameters:
+      shared_buffers: 64MB
+  storage:
+    storageClass: longhorn
+    size: 2Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 192Mi
+    limits:
+      memory: 384Mi
+---
+# Solid Queue keeps its tables in a second database (config/database.yml: queue).
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: fans-queue
+spec:
+  cluster:
+    name: fans-pg
+  name: fans_production_queue
+  owner: fans

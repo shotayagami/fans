@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <title><%= content_for(:title) || "Fans" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="application-name" content="Fans">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <%= link_to "Fans", root_path, class: "wordmark" %>
+      <nav class="site-nav" aria-label="メイン">
+        <% if user_signed_in? %>
+          <% if current_user.creator? %>
+            <%= link_to "スタジオ", studio_root_path %>
+          <% else %>
+            <%= link_to "加入中のプラン", subscriptions_path %>
+          <% end %>
+          <% if current_user.admin? %>
+            <%= link_to "管理", admin_subscriptions_path %>
+          <% end %>
+          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "link-button" %>
+        <% else %>
+          <%= link_to "ログイン", new_user_session_path %>
+          <%= link_to "登録", new_user_registration_path, class: "button button-small" %>
+        <% end %>
+      </nav>
+    </header>
+
+    <% if user_signed_in? && current_user.creator? %>
+      <nav class="studio-nav" aria-label="スタジオ">
+        <%= link_to "プラン", studio_plans_path %>
+        <%= link_to "投稿", studio_posts_path %>
+        <%= link_to "売上", studio_ledger_entries_path %>
+        <%= link_to "受取口座", studio_connect_path %>
+      </nav>
+    <% end %>
+
+    <main class="page">
+      <% flash.each do |type, message| %>
+        <p class="flash flash-<%= type %>" role="status"><%= message %></p>
+      <% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <p>Stripe のテストモードで動くデモです。実際の決済は行われません。</p>
+    </footer>
+  </body>
+</html>

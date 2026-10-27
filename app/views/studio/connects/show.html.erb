@@ -1,0 +1,14 @@
+<% content_for :title, "受取口座 | スタジオ" %>
+
+<h1>受取口座</h1>
+
+<% if current_user.charges_enabled? %>
+  <p>登録済みです。支援の売上から手数料 <%= LedgerEntry::PLATFORM_FEE_PERCENT %>% を引いた額が、この口座に送金されます。</p>
+<% else %>
+  <p>支援を受け付けるには、Stripe で受取口座を登録します。テストモードなので、Stripe の画面ではテスト用の値を入力してください。</p>
+  <%= button_to(current_user.stripe_account_id ? "登録を続ける" : "Stripe で登録する",
+                studio_connect_path, class: "button", data: { turbo: false }) %>
+  <% if current_user.stripe_account_id %>
+    <p class="hint">登録を終えたのに反映されない場合は、<%= link_to "状態を再確認", studio_connect_path(returned: 1) %>してください。</p>
+  <% end %>
+<% end %>

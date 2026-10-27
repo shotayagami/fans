@@ -1,0 +1,5 @@
+<% content_for :title, "投稿を編集 | スタジオ" %>
+<h1>投稿を編集</h1>
+<%= render "form", post: @post %>
+<%= button_to "この投稿を削除", studio_post_path(@post), method: :delete, class: "link-button danger",
+              form: { data: { turbo_confirm: "削除します。よろしいですか?" } } %>

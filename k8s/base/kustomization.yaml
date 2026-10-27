@@ -1,0 +1,25 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: fans
+
+resources:
+  - namespace.yaml
+  - postgres.yaml
+  - storage.yaml
+  - migrate-job.yaml
+  - web.yaml
+  - worker.yaml
+  - ingress.yaml
+  - networkpolicy.yaml
+
+configMapGenerator:
+  - name: fans-config
+    literals:
+      - APP_HOST=fans.yagamin.net
+      - DATABASE_HOST=fans-pg-rw
+      - HTTP_PORT=8080
+      - HOME=/tmp
+      - RAILS_LOG_LEVEL=info

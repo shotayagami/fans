@@ -1,0 +1,13 @@
+# Active Storage uploads (config/storage.yml: local). ReadWriteOnce ties the web Pod
+# to one replica; move to S3-compatible storage before scaling out.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: fans-storage
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 2Gi

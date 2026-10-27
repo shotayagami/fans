@@ -1,0 +1,31 @@
+<% content_for :title, "売上 | スタジオ" %>
+
+<h1>売上</h1>
+
+<dl class="totals">
+  <div><dt>支援額</dt><dd><%= yen(@totals[0]) %></dd></div>
+  <div><dt>手数料 (<%= LedgerEntry::PLATFORM_FEE_PERCENT %>%)</dt><dd><%= yen(@totals[1]) %></dd></div>
+  <div><dt>受取額</dt><dd><%= yen(@totals[2]) %></dd></div>
+</dl>
+
+<% if @ledger_entries.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>日時</th><th>支援者</th><th>プラン</th><th class="num">支援額</th><th class="num">手数料</th><th class="num">受取額</th></tr></thead>
+      <tbody>
+        <% @ledger_entries.each do |entry| %>
+          <tr>
+            <td><%= l(entry.paid_at, format: :short) %></td>
+            <td><%= entry.subscription.fan.display_name %></td>
+            <td><%= entry.subscription.plan.name %></td>
+            <td class="num"><%= yen(entry.gross_amount) %></td>
+            <td class="num"><%= yen(entry.platform_fee) %></td>
+            <td class="num"><%= yen(entry.creator_amount) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">売上はまだありません。</p>
+<% end %>

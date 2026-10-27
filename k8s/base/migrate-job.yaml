@@ -1,0 +1,60 @@
+# Runs on every sync, before web and worker roll (sync-wave 1 < 2).
+# On the first sync the database may still be starting; backoffLimit covers that wait.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: fans-migrate
+  annotations:
+    argocd.argoproj.io/hook: Sync
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  backoffLimit: 10
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: fans-migrate
+    spec:
+      restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: migrate
+          image: fans
+          command: [ "./bin/rails", "db:prepare" ]
+          envFrom:
+            - configMapRef:
+                name: fans-config
+            - secretRef:
+                name: fans-secret
+          env:
+            - name: FANS_DATABASE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: fans-pg-app
+                  key: password
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ "ALL" ]
+          volumeMounts:
+            - name: tmp
+              mountPath: /rails/tmp
+            - name: systmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 192Mi
+            limits:
+              memory: 384Mi
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: systmp
+          emptyDir: {}

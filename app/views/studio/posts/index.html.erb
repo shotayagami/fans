@@ -1,0 +1,30 @@
+<% content_for :title, "投稿 | スタジオ" %>
+
+<div class="page-head">
+  <h1>投稿</h1>
+  <% if current_user.plans.exists? %>
+    <%= link_to "投稿する", new_studio_post_path, class: "button" %>
+  <% end %>
+</div>
+
+<% if @posts.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>タイトル</th><th>プラン</th><th>公開日時</th><th></th></tr></thead>
+      <tbody>
+        <% @posts.each do |post| %>
+          <tr>
+            <td><%= link_to post.title, post_path(post) %></td>
+            <td><%= post.plan.name %></td>
+            <td><%= post.published_at ? l(post.published_at, format: :short) : "下書き" %></td>
+            <td><%= link_to "編集", edit_studio_post_path(post) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% elsif current_user.plans.exists? %>
+  <p class="empty">投稿はまだありません。</p>
+<% else %>
+  <p class="empty">投稿はプランごとに公開します。先に<%= link_to "プランを作って", new_studio_plan_path %>ください。</p>
+<% end %>

@@ -1,0 +1,43 @@
+<% content_for :title, "#{@creator.display_name} | Fans" %>
+
+<h1><%= @creator.display_name %></h1>
+
+<section aria-labelledby="plans-heading">
+  <h2 id="plans-heading">プラン</h2>
+  <% if @plans.any? %>
+    <div class="plan-grid">
+      <% @plans.each do |plan| %>
+        <article class="plan">
+          <h3><%= plan.name %></h3>
+          <p class="plan-price"><%= yen(plan.price) %><span>/ 月</span></p>
+          <p><%= plan.description %></p>
+          <% if user_signed_in? && current_user.subscribed_to?(plan) %>
+            <p class="badge">加入中</p>
+          <% elsif user_signed_in? && current_user == @creator %>
+            <p class="muted">自分のプランです</p>
+          <% else %>
+            <%= button_to "このプランで支援する", plan_checkout_path(plan), class: "button", data: { turbo: false } %>
+          <% end %>
+        </article>
+      <% end %>
+    </div>
+  <% else %>
+    <p class="empty">プランはまだありません。</p>
+  <% end %>
+</section>
+
+<section aria-labelledby="posts-heading">
+  <h2 id="posts-heading">投稿</h2>
+  <% if @posts.any? %>
+    <ul class="post-list">
+      <% @posts.each do |post| %>
+        <li>
+          <%= link_to post.title, post_path(post) %>
+          <span class="muted"><%= post.plan.name %> · <%= l(post.published_at, format: :short) %></span>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="empty">投稿はまだありません。</p>
+  <% end %>
+</section>

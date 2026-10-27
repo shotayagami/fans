@@ -1,0 +1,4 @@
+#!/bin/bash -e
+
+# Migrations run as a separate Job (k8s/base/migrate-job.yaml), not on server start.
+exec "${@}"

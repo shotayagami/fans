@@ -1,0 +1,29 @@
+<% content_for :title, "プラン | スタジオ" %>
+
+<div class="page-head">
+  <h1>プラン</h1>
+  <%= link_to "プランを作る", new_studio_plan_path, class: "button" %>
+</div>
+
+<% unless current_user.charges_enabled? %>
+  <p class="flash flash-alert">支援を受け付けるには、先に<%= link_to "受取口座の登録", studio_connect_path %>を済ませてください。</p>
+<% end %>
+
+<% if @plans.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>プラン名</th><th>月額</th><th></th></tr></thead>
+      <tbody>
+        <% @plans.each do |plan| %>
+          <tr>
+            <td><%= plan.name %></td>
+            <td><%= yen(plan.price) %></td>
+            <td><%= link_to "編集", edit_studio_plan_path(plan) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">プランはまだありません。</p>
+<% end %>

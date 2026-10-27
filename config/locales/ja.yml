@@ -1,0 +1,26 @@
+ja:
+  activerecord:
+    models:
+      user: ユーザー
+      plan: プラン
+      post: 投稿
+    attributes:
+      user:
+        display_name: 表示名
+        role: 登録の種類
+      plan:
+        name: プラン名
+        description: 説明
+        price: 月額 (円)
+      post:
+        plan: 公開先のプラン
+        plan_id: 公開先のプラン
+        title: タイトル
+        body: 本文
+        image: 画像
+        published_at: 公開日時
+  enums:
+    user:
+      role:
+        fan: ファン
+        creator: クリエイター

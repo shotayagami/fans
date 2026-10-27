@@ -1,0 +1,35 @@
+<% content_for :title, "加入中のプラン | Fans" %>
+
+<h1>加入中のプラン</h1>
+
+<% if params[:checkout] == "success" %>
+  <p class="flash flash-notice" role="status">お支払いを受け付けました。反映まで数秒かかることがあります。</p>
+<% end %>
+
+<% if @subscriptions.any? %>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>クリエイター</th><th>プラン</th><th>状態</th><th>次の更新日</th><th></th></tr>
+      </thead>
+      <tbody>
+        <% @subscriptions.each do |subscription| %>
+          <tr>
+            <td><%= link_to subscription.plan.creator.display_name, creator_path(subscription.plan.creator) %></td>
+            <td><%= subscription.plan.name %></td>
+            <td><%= subscription_status_label(subscription) %></td>
+            <td><%= subscription.current_period_end && l(subscription.current_period_end.to_date) %></td>
+            <td>
+              <% if subscription.status.in?(Subscription::ACCESS_STATUSES) %>
+                <%= button_to "解約", subscription_path(subscription), method: :delete, class: "link-button",
+                              form: { data: { turbo_confirm: "期間の終わりで解約します。よろしいですか?" } } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% else %>
+  <p class="empty">加入しているプランはありません。<%= link_to "クリエイターを探す", root_path %></p>
+<% end %>
