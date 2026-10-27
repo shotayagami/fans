@@ -1,0 +1,6 @@
+# Keep the default rules; only skip SealedSecret ciphertext, which only the cluster can decrypt.
+[extend]
+useDefault = true
+
+[allowlist]
+paths = ['''k8s/overlays/production/sealed-secret\.yaml''']
