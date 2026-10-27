@@ -9,6 +9,6 @@ resources:
 
 # CI rewrites this to the digest it just pushed (.github/workflows/ci.yml).
 images:
-- digest: sha256:77e36aa4e18faf7a746cc31294361f7c71a4094174068c15d604f1811507ce76
+- digest: sha256:16f49b0c94e77b11c382b69ea815aed9e524fb725a991dfb79c02e2ed362eeb7
   name: fans
   newName: ghcr.io/shotayagami/fans
