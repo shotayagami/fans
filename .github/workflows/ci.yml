@@ -24,6 +24,24 @@ jobs:
       - name: Scan for known security vulnerabilities in gems used
         run: bin/bundler-audit
       
+  # Rails 固有の検査は brakeman、gem の脆弱性は bundler-audit が受け持つ。
+  # ここでは Actions・Dockerfile・シークレットを見る (p/ruby は brakeman と重なるため入れない)。
+  semgrep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.12"
+      - name: Install Semgrep
+        run: pip install semgrep==1.182.1
+      # --error: 指摘が 1 件でもあれば非 0 で終わる。
+      - name: Semgrep
+        run: >
+          semgrep scan --metrics=off --error --quiet
+          --config p/secrets --config p/github-actions --config p/dockerfile
+
   scan_js:
     runs-on: ubuntu-latest
 
