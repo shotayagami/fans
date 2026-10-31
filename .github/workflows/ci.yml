@@ -123,6 +123,7 @@ jobs:
     permissions:
       contents: write
       packages: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
@@ -142,13 +143,24 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.sha }}
 
-      # Argo CD deploys whatever k8s/overlays/production points at. Pushes made with
-      # GITHUB_TOKEN do not trigger workflows, so this commit does not loop.
+      # Argo CD deploys whatever k8s/overlays/production points at. main requires a pull
+      # request, so the pin goes through a short-lived branch that is squash-merged right
+      # away. Changes made with GITHUB_TOKEN do not trigger workflows, so this merge does
+      # not loop.
       - name: Pin the new image for Argo CD
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          short="${GITHUB_SHA::7}"
+          branch="deploy/${short}"
           cd k8s/overlays/production
           kustomize edit set image fans=ghcr.io/${{ github.repository }}@${{ steps.build.outputs.digest }}
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "deploy: ${GITHUB_SHA::7}"
-          git push
+          git switch -c "${branch}"
+          git commit -am "deploy: ${short}"
+          git push origin "${branch}"
+          gh pr create --base main --head "${branch}" --title "deploy: ${short}" \
+            --body "Pins the image built from ${GITHUB_SHA} for Argo CD."
+          gh pr merge "${branch}" --squash
+          git push origin --delete "${branch}"
