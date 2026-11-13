@@ -6,7 +6,7 @@ metadata:
   name: fans-pg
 spec:
   instances: 1
-  imageName: ghcr.io/cloudnative-pg/postgresql:17
+  imageName: ghcr.io/cloudnative-pg/postgresql:17.12-202611122305-system-trixie@sha256:6b8f23131e02fb4f2765fd1c7f9bca1c09a0b8b5aa90d69a3c5e8e5c60fa3d76
   enableSuperuserAccess: false
   bootstrap:
     initdb:
