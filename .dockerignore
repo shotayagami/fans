@@ -47,3 +47,5 @@
 /Dockerfile*
 
 /vendor/bundle
+.claude
+CLAUDE.md
