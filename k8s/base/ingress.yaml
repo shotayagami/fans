@@ -8,7 +8,8 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: 6m
 spec:
-  ingressClassName: nginx
+  # 2026-11 ingress-nginx を外し、rke2-traefik の kubernetesIngressNGINX provider が読むクラスに変えた (shotayagami/homelab-infra#1061)。
+  ingressClassName: rke2-ingress-nginx-migration
   rules:
     - host: fans.yagamin.net
       http:
