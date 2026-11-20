@@ -24,13 +24,6 @@ spec:
               kubernetes.io/metadata.name: kube-system
           podSelector:
             matchLabels:
-              app.kubernetes.io/name: rke2-ingress-nginx
-        # 2026-11 ingress-nginx から rke2-traefik への移行 (shotayagami/homelab-infra#1061)。切り替えが済むまで両方を許可する。
-        - namespaceSelector:
-            matchLabels:
-              kubernetes.io/metadata.name: kube-system
-          podSelector:
-            matchLabels:
               app.kubernetes.io/name: rke2-traefik
       ports:
         - protocol: TCP
