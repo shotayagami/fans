@@ -8,7 +8,7 @@ services:
       - db:/var/lib/postgresql/data
 
   app:
-    image: ruby:3.4.12
+    image: ruby:3.4.13
     working_dir: /app
     user: "${UID:-1000}:${GID:-1000}"
     command: bin/rails server -b 0.0.0.0
